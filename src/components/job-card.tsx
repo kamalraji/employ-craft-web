@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MapPin, Calendar, Building, DollarSign } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 
 interface JobCardProps {
   job: Job;
@@ -90,7 +90,7 @@ export function JobCard({ job, compact = false }: JobCardProps) {
       <CardFooter className="px-6 pb-6 pt-0">
         <div className="flex w-full space-x-2">
           <Button asChild variant="outline" className="flex-1">
-            <Link href={`/jobs/${job.id}`}>
+            <Link to={`/jobs/${job.id}`}>
               View Details
             </Link>
           </Button>

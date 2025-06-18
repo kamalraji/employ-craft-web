@@ -5,7 +5,7 @@ import { JobCard } from '@/components/job-card';
 import { Button } from '@/components/ui/button';
 import { useJobs } from '@/hooks/useJobs';
 import { ArrowRight, Star, Clock, Shield } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 
 const Index = () => {
   const { data: jobsData, isLoading } = useJobs({}, 1);
@@ -57,7 +57,7 @@ const Index = () => {
               
               <div className="text-center">
                 <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700">
-                  <Link href="/jobs">
+                  <Link to="/jobs">
                     View All Jobs
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
@@ -96,7 +96,7 @@ const Index = () => {
           <h2 className="text-3xl font-bold text-white mb-4">Ready to Find Your Dream Job?</h2>
           <p className="text-xl text-blue-100 mb-8">Join thousands of professionals who found their perfect role</p>
           <Button asChild size="lg" variant="secondary" className="bg-white text-blue-600 hover:bg-gray-100">
-            <Link href="/jobs">
+            <Link to="/jobs">
               Start Your Search
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
@@ -115,25 +115,25 @@ const Index = () => {
             <div>
               <h4 className="text-sm font-semibold mb-4">For Job Seekers</h4>
               <ul className="space-y-2 text-gray-300">
-                <li><Link href="/jobs" className="hover:text-white">Browse Jobs</Link></li>
-                <li><Link href="/companies" className="hover:text-white">Companies</Link></li>
-                <li><Link href="/salary" className="hover:text-white">Salary Guide</Link></li>
+                <li><Link to="/jobs" className="hover:text-white">Browse Jobs</Link></li>
+                <li><Link to="/companies" className="hover:text-white">Companies</Link></li>
+                <li><Link to="/salary" className="hover:text-white">Salary Guide</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="text-sm font-semibold mb-4">For Employers</h4>
               <ul className="space-y-2 text-gray-300">
-                <li><Link href="/post-job" className="hover:text-white">Post a Job</Link></li>
-                <li><Link href="/pricing" className="hover:text-white">Pricing</Link></li>
-                <li><Link href="/admin" className="hover:text-white">Admin Panel</Link></li>
+                <li><Link to="/post-job" className="hover:text-white">Post a Job</Link></li>
+                <li><Link to="/pricing" className="hover:text-white">Pricing</Link></li>
+                <li><Link to="/admin" className="hover:text-white">Admin Panel</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="text-sm font-semibold mb-4">Company</h4>
               <ul className="space-y-2 text-gray-300">
-                <li><Link href="/about" className="hover:text-white">About Us</Link></li>
-                <li><Link href="/contact" className="hover:text-white">Contact</Link></li>
-                <li><Link href="/privacy" className="hover:text-white">Privacy Policy</Link></li>
+                <li><Link to="/about" className="hover:text-white">About Us</Link></li>
+                <li><Link to="/contact" className="hover:text-white">Contact</Link></li>
+                <li><Link to="/privacy" className="hover:text-white">Privacy Policy</Link></li>
               </ul>
             </div>
           </div>

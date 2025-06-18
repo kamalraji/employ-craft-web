@@ -7,30 +7,30 @@ import { Button } from '@/components/ui/button';
 import { useJobs } from '@/hooks/useJobs';
 import { JobFilters as JobFiltersType } from '@/types/job';
 import { Loader2, Grid, List } from 'lucide-react';
-import { useRouter } from 'next/router';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 
 export default function JobsPage() {
-  const router = useRouter();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [filters, setFilters] = useState<JobFiltersType>({});
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   // Initialize filters from URL params
   useEffect(() => {
-    if (router.isReady) {
-      const urlFilters: JobFiltersType = {};
-      
-      if (router.query.search) urlFilters.search = router.query.search as string;
-      if (router.query.category) urlFilters.category = router.query.category as string;
-      if (router.query.type) urlFilters.type = router.query.type as any;
-      if (router.query.location) urlFilters.location = router.query.location as string;
-      if (router.query.sortBy) urlFilters.sortBy = router.query.sortBy as any;
-      if (router.query.sortOrder) urlFilters.sortOrder = router.query.sortOrder as any;
-      
-      setFilters(urlFilters);
-    }
-  }, [router.isReady, router.query]);
+    const searchParams = new URLSearchParams(location.search);
+    const urlFilters: JobFiltersType = {};
+    
+    if (searchParams.get('search')) urlFilters.search = searchParams.get('search') as string;
+    if (searchParams.get('category')) urlFilters.category = searchParams.get('category') as string;
+    if (searchParams.get('type')) urlFilters.type = searchParams.get('type') as any;
+    if (searchParams.get('location')) urlFilters.location = searchParams.get('location') as string;
+    if (searchParams.get('sortBy')) urlFilters.sortBy = searchParams.get('sortBy') as any;
+    if (searchParams.get('sortOrder')) urlFilters.sortOrder = searchParams.get('sortOrder') as any;
+    
+    setFilters(urlFilters);
+  }, [location.search]);
 
   const { data: jobsData, isLoading, error } = useJobs(filters, currentPage);
 
@@ -44,7 +44,7 @@ export default function JobsPage() {
       if (value) params.set(key, value.toString());
     });
     
-    router.push(`/jobs?${params.toString()}`, undefined, { shallow: true });
+    navigate(`/jobs?${params.toString()}`, { replace: true });
   };
 
   const handleLoadMore = () => {

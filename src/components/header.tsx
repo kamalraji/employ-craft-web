@@ -1,5 +1,5 @@
 
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Briefcase, User } from 'lucide-react';
 
@@ -9,7 +9,7 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2">
             <div className="bg-blue-600 p-2 rounded-lg">
               <Briefcase className="h-6 w-6 text-white" />
             </div>
@@ -19,19 +19,19 @@ export function Header() {
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             <Link 
-              href="/jobs" 
+              to="/jobs" 
               className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
             >
               Find Jobs
             </Link>
             <Link 
-              href="/companies" 
+              to="/companies" 
               className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
             >
               Companies
             </Link>
             <Link 
-              href="/about" 
+              to="/about" 
               className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
             >
               About
@@ -41,13 +41,13 @@ export function Header() {
           {/* Actions */}
           <div className="flex items-center space-x-4">
             <Button variant="ghost" size="sm" asChild>
-              <Link href="/admin/login">
+              <Link to="/admin/login">
                 <User className="h-4 w-4 mr-2" />
                 Admin
               </Link>
             </Button>
             <Button asChild>
-              <Link href="/jobs">
+              <Link to="/jobs">
                 Find Jobs
               </Link>
             </Button>
