@@ -1,29 +1,20 @@
 
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Header } from '@/components/header';
-import { Button } from '@/components/ui/button';
+import { ApplicationForm } from '@/components/application-form';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useJob } from '@/hooks/useJobs';
-import { 
-  ArrowLeft, 
-  MapPin, 
-  Calendar, 
-  Building, 
-  DollarSign, 
-  ExternalLink,
-  Briefcase,
-  Clock,
-  Users,
-  Globe
-} from 'lucide-react';
+import { MapPin, Calendar, Building, DollarSign, Clock, Users, ExternalLink } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { useState } from 'react';
 
 export default function JobDetailsPage() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const { data: job, isLoading, error } = useJob(id!);
+  const [showApplicationForm, setShowApplicationForm] = useState(false);
 
   if (isLoading) {
     return (
@@ -31,13 +22,9 @@ export default function JobDetailsPage() {
         <Header />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
-            <div className="h-12 bg-gray-200 rounded w-3/4 mb-6"></div>
-            <div className="space-y-4">
-              <div className="h-4 bg-gray-200 rounded w-full"></div>
-              <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-              <div className="h-4 bg-gray-200 rounded w-4/6"></div>
-            </div>
+            <div className="bg-gray-200 h-8 w-3/4 mb-4 rounded"></div>
+            <div className="bg-gray-200 h-6 w-1/2 mb-8 rounded"></div>
+            <div className="bg-gray-200 h-64 w-full rounded"></div>
           </div>
         </div>
       </div>
@@ -49,12 +36,9 @@ export default function JobDetailsPage() {
       <div className="min-h-screen bg-gray-50">
         <Header />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Job Not Found</h2>
-            <p className="text-gray-600 mb-6">The job you're looking for might have been removed or doesn't exist.</p>
-            <Button onClick={() => navigate('/jobs')}>
-              Back to Jobs
-            </Button>
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Job Not Found</h1>
+            <p className="text-gray-600">The job you're looking for doesn't exist or has been removed.</p>
           </div>
         </div>
       </div>
@@ -70,189 +54,150 @@ export default function JobDetailsPage() {
       <Header />
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Back Button */}
-        <Button variant="ghost" onClick={() => navigate(-1)} className="mb-6">
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
-        </Button>
-
-        {/* Job Header */}
-        <Card className="mb-8">
-          <CardHeader>
-            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-              <div className="flex-1">
-                <h1 className="text-3xl font-bold text-gray-900 mb-4">{job.title}</h1>
-                
-                <div className="flex flex-wrap items-center gap-4 mb-4">
-                  <div className="flex items-center text-gray-600">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-6">
+            <Card>
+              <CardContent className="p-8">
+                <div className="mb-6">
+                  <h1 className="text-3xl font-bold text-gray-900 mb-2">{job.title}</h1>
+                  <div className="flex items-center text-gray-600 mb-4">
                     <Building className="h-5 w-5 mr-2" />
-                    <span className="font-medium text-lg">{job.company}</span>
+                    <span className="text-lg font-medium">{job.company}</span>
                   </div>
-                  <div className="flex items-center text-gray-500">
-                    <MapPin className="h-5 w-5 mr-2" />
-                    <span>{job.location}</span>
-                  </div>
-                  <div className="flex items-center text-gray-500">
-                    <Calendar className="h-5 w-5 mr-2" />
-                    <span>Posted {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}</span>
+                  <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                    <div className="flex items-center">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      {job.location}
+                    </div>
+                    <div className="flex items-center">
+                      <Clock className="h-4 w-4 mr-1" />
+                      {formatJobType(job.type)}
+                    </div>
+                    <div className="flex items-center">
+                      <Calendar className="h-4 w-4 mr-1" />
+                      Posted {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap gap-3 mb-6">
-                  <Badge variant="secondary" className="flex items-center gap-1">
-                    <Briefcase className="h-3 w-3" />
-                    {formatJobType(job.type)}
-                  </Badge>
-                  <Badge variant="outline">{job.category}</Badge>
+                <div className="flex flex-wrap gap-2 mb-6">
+                  <Badge variant="secondary">{job.category}</Badge>
+                  <Badge variant="outline">{formatJobType(job.type)}</Badge>
                   {job.salary && (
-                    <Badge variant="outline" className="flex items-center gap-1 text-green-600">
-                      <DollarSign className="h-3 w-3" />
+                    <Badge variant="outline" className="text-green-600">
+                      <DollarSign className="h-3 w-3 mr-1" />
                       {job.salary}
                     </Badge>
                   )}
                 </div>
-              </div>
 
-              <div className="lg:text-right">
-                {job.application_url && (
-                  <Button asChild size="lg" className="w-full lg:w-auto mb-4">
-                    <a href={job.application_url} target="_blank" rel="noopener noreferrer">
-                      Apply Now
-                      <ExternalLink className="ml-2 h-4 w-4" />
-                    </a>
-                  </Button>
-                )}
-              </div>
-            </div>
-          </CardHeader>
-        </Card>
+                <Separator className="my-6" />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Job Description */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  Job Description
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="prose max-w-none">
-                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                    {job.description}
-                  </p>
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900 mb-3">Job Description</h2>
+                    <div className="prose prose-gray max-w-none">
+                      <p className="whitespace-pre-line text-gray-700 leading-relaxed">
+                        {job.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  {job.requirements && job.requirements.length > 0 && (
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-900 mb-3">Requirements</h2>
+                      <ul className="space-y-2">
+                        {job.requirements.map((requirement, index) => (
+                          <li key={index} className="flex items-start">
+                            <span className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                            <span className="text-gray-700">{requirement}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
 
-            {/* Requirements */}
-            {job.requirements && job.requirements.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Clock className="h-5 w-5" />
-                    Requirements
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2">
-                    {job.requirements.map((requirement, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <span className="text-blue-600 mt-1">•</span>
-                        <span className="text-gray-700">{requirement}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
+            {/* Application Form */}
+            {showApplicationForm && (
+              <ApplicationForm
+                jobId={job.id}
+                jobTitle={job.title}
+                onSuccess={() => setShowApplicationForm(false)}
+              />
             )}
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Quick Info */}
             <Card>
-              <CardHeader>
-                <CardTitle>Job Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h4 className="font-medium text-gray-900 mb-1">Job Type</h4>
-                  <p className="text-gray-600">{formatJobType(job.type)}</p>
-                </div>
-                
-                <Separator />
-                
-                <div>
-                  <h4 className="font-medium text-gray-900 mb-1">Category</h4>
-                  <p className="text-gray-600">{job.category}</p>
-                </div>
-                
-                {job.salary && (
-                  <>
-                    <Separator />
-                    <div>
-                      <h4 className="font-medium text-gray-900 mb-1">Salary</h4>
-                      <p className="text-gray-600">{job.salary}</p>
-                    </div>
-                  </>
-                )}
-                
-                <Separator />
-                
-                <div>
-                  <h4 className="font-medium text-gray-900 mb-1">Location</h4>
-                  <p className="text-gray-600">{job.location}</p>
-                </div>
-                
-                <Separator />
-                
-                <div>
-                  <h4 className="font-medium text-gray-900 mb-1">Posted</h4>
-                  <p className="text-gray-600">
-                    {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Company Info */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Building className="h-5 w-5" />
-                  About {job.company}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 mb-4">
-                  Learn more about {job.company} and explore other opportunities with this employer.
-                </p>
-                <Button variant="outline" className="w-full">
-                  <Globe className="h-4 w-4 mr-2" />
-                  View Company Profile
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Apply Again */}
-            {job.application_url && (
-              <Card>
-                <CardContent className="pt-6">
-                  <Button asChild className="w-full" size="lg">
-                    <a href={job.application_url} target="_blank" rel="noopener noreferrer">
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  {!showApplicationForm ? (
+                    <Button onClick={() => setShowApplicationForm(true)} className="w-full">
+                      <Users className="mr-2 h-4 w-4" />
                       Apply for this Job
-                      <ExternalLink className="ml-2 h-4 w-4" />
-                    </a>
-                  </Button>
-                  <p className="text-sm text-gray-500 text-center mt-3">
-                    You'll be redirected to the company's application page
-                  </p>
-                </CardContent>
-              </Card>
-            )}
+                    </Button>
+                  ) : (
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setShowApplicationForm(false)} 
+                      className="w-full"
+                    >
+                      Hide Application Form
+                    </Button>
+                  )}
+                  
+                  {job.application_url && (
+                    <Button variant="outline" asChild className="w-full">
+                      <a href={job.application_url} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                        Apply on Company Site
+                      </a>
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="font-semibold text-gray-900 mb-4">Job Details</h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Company</span>
+                    <span className="font-medium">{job.company}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Location</span>
+                    <span className="font-medium">{job.location}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Job Type</span>
+                    <span className="font-medium">{formatJobType(job.type)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Category</span>
+                    <span className="font-medium">{job.category}</span>
+                  </div>
+                  {job.salary && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Salary</span>
+                      <span className="font-medium text-green-600">{job.salary}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Posted</span>
+                    <span className="font-medium">
+                      {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

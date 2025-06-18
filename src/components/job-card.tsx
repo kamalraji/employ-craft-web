@@ -3,16 +3,25 @@ import { Job } from '@/types/job';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MapPin, Calendar, Building, DollarSign } from 'lucide-react';
+import { MapPin, Calendar, Building, DollarSign, Heart } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { useSaveJob, useUnsaveJob } from '@/hooks/useSavedJobs';
+import { toast } from '@/hooks/use-toast';
 
 interface JobCardProps {
   job: Job;
   compact?: boolean;
+  isSaved?: boolean;
+  currentUserId?: string;
 }
 
-export function JobCard({ job, compact = false }: JobCardProps) {
+export function JobCard({ job, compact = false, isSaved = false, currentUserId }: JobCardProps) {
+  const [saved, setSaved] = useState(isSaved);
+  const saveJob = useSaveJob();
+  const unsaveJob = useUnsaveJob();
+
   const formatJobType = (type: string) => {
     return type.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
   };
@@ -25,6 +34,41 @@ export function JobCard({ job, compact = false }: JobCardProps) {
   const truncateDescription = (text: string, maxLength: number = 120) => {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
+  };
+
+  const handleSaveToggle = async () => {
+    if (!currentUserId) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to save jobs",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      if (saved) {
+        await unsaveJob.mutateAsync({ userId: currentUserId, jobId: job.id });
+        setSaved(false);
+        toast({
+          title: "Job Unsaved",
+          description: "Job removed from your saved list",
+        });
+      } else {
+        await saveJob.mutateAsync({ userId: currentUserId, jobId: job.id });
+        setSaved(true);
+        toast({
+          title: "Job Saved",
+          description: "Job added to your saved list",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update saved status",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -45,9 +89,21 @@ export function JobCard({ job, compact = false }: JobCardProps) {
             </div>
           </div>
           <div className="flex flex-col items-end space-y-2">
-            <Badge variant="secondary" className="whitespace-nowrap">
-              {formatJobType(job.type)}
-            </Badge>
+            <div className="flex items-center space-x-2">
+              <Badge variant="secondary" className="whitespace-nowrap">
+                {formatJobType(job.type)}
+              </Badge>
+              {currentUserId && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleSaveToggle}
+                  className="p-1 h-auto"
+                >
+                  <Heart className={`h-4 w-4 ${saved ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} />
+                </Button>
+              )}
+            </div>
             {formatSalary(job.salary) && (
               <div className="flex items-center text-green-600 text-sm font-medium">
                 <DollarSign className="h-4 w-4 mr-1" />
