@@ -78,11 +78,11 @@ export function HeroSection() {
           <h3 className="text-lg font-semibold text-gray-700 mb-4">Popular Categories</h3>
           <div className="flex flex-wrap justify-center gap-3">
             {popularCategories.map((category) => (
-              <Badge key={category} variant="secondary" className="cursor-pointer hover:bg-blue-100" asChild>
-                <Link to={`/jobs?category=${category}`}>
+              <Link key={category} to={`/jobs?category=${category}`}>
+                <Badge variant="secondary" className="cursor-pointer hover:bg-blue-100">
                   {category}
-                </Link>
-              </Badge>
+                </Badge>
+              </Link>
             ))}
           </div>
         </div>
