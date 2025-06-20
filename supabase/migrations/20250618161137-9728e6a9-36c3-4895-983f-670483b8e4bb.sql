@@ -177,3 +177,6 @@ CREATE TABLE IF NOT EXISTS rate_limits (
   window_start timestamptz NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_rate_limits_identifier_window ON rate_limits(identifier, window_start);
+
+-- Add new_field column to jobs table
+ALTER TABLE public.jobs ADD COLUMN IF NOT EXISTS new_field text;

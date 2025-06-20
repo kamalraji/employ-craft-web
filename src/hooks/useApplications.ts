@@ -30,7 +30,7 @@ export function useApplications(search?: string) {
         'postgres_changes',
         { event: '*', schema: 'public', table: 'job_applications' },
         () => {
-          queryClient.invalidateQueries({ queryKey: ['applications'] });
+          queryClient.invalidateQueries('applications', { exact: false });
         }
       )
       .subscribe();

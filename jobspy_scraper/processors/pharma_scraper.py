@@ -40,6 +40,7 @@ def scrape_indianpharmajobs():
             'job_url': job_url,
             'description': description,
             'site': 'indianpharmajobs.com',
+            'new_field': '',
         })
     return jobs
 
@@ -73,6 +74,7 @@ def scrape_pharmajobspost():
             'job_url': job_url,
             'description': description,
             'site': 'pharmajobspost.in',
+            'new_field': '',
         })
     return jobs
 
@@ -116,6 +118,7 @@ def scrape_pharmastuff():
             'posted': posted,
             'description': description,
             'site': 'pharmastuff.org.in',
+            'new_field': '',
         })
     return jobs
 

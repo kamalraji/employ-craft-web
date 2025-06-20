@@ -9,7 +9,8 @@ FIELD_MAP = {
     "job_url": "application_url",
     "description": "job_description",
     "site": "source_platform",
-    "logo_url": "logo_url"
+    "logo_url": "logo_url",
+    "new_field": "new_field"
 }
 
 def map_fields(df):

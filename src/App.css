@@ -42,8 +42,9 @@
 }
 
 /* Remove all padding and margin from the main app container */
-.App {
-  padding: 0 !important;
-  margin: 0 !important;
+/* Remove all padding and margin from the main app container */
+body .App {
+  padding: 0;
+  margin: 0;
   box-sizing: border-box;
 }
