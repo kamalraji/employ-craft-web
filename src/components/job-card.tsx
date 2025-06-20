@@ -1,4 +1,3 @@
-
 import { Job } from '@/types/job';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -150,13 +149,6 @@ export function JobCard({ job, compact = false, isSaved = false, currentUserId }
               View Details
             </Link>
           </Button>
-          {job.application_url && (
-            <Button asChild className="flex-1">
-              <a href={job.application_url} target="_blank" rel="noopener noreferrer">
-                Apply Now
-              </a>
-            </Button>
-          )}
         </div>
       </CardFooter>
     </Card>

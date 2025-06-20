@@ -1,12 +1,14 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Job, JobFilters, PaginatedResponse } from '@/types/job';
+import { useEffect } from 'react';
 
 const JOBS_PER_PAGE = 12;
 
 export function useJobs(filters: JobFilters = {}, page: number = 1) {
-  return useQuery({
+  const queryClient = useQueryClient();
+
+  const queryResult = useQuery({
     queryKey: ['jobs', filters, page],
     queryFn: async (): Promise<PaginatedResponse<Job>> => {
       let query = supabase
@@ -16,7 +18,9 @@ export function useJobs(filters: JobFilters = {}, page: number = 1) {
 
       // Apply filters
       if (filters.search) {
-        query = query.or(`title.ilike.%${filters.search}%,company.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
+        query = query.or(
+          `description.fts.${filters.search},title.fts.${filters.search},company.fts.${filters.search}`
+        );
       }
 
       if (filters.category) {
@@ -56,6 +60,23 @@ export function useJobs(filters: JobFilters = {}, page: number = 1) {
       };
     },
   });
+
+  useEffect(() => {
+    const channel = supabase.channel('realtime-jobs')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'jobs' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['jobs'] });
+        }
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+  return queryResult;
 }
 
 export function useJob(id: string) {

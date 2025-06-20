@@ -40,3 +40,10 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Remove all padding and margin from the main app container */
+.App {
+  padding: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box;
+}
